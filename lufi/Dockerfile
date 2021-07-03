@@ -13,4 +13,4 @@ WORKDIR /var/www/
 
 EXPOSE 8081
 
-CMD ["carton", "exec", "hypnotoad", "script/lufi"]
+CMD ["carton", "exec", "hypnotoad", "script/lufi", "--foreground"]
