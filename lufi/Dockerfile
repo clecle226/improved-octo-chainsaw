@@ -13,4 +13,6 @@ WORKDIR /var/www/
 
 EXPOSE 8081
 
+VOLUME [ "/var/www/files/" ]
+
 CMD ["carton", "exec", "hypnotoad", "script/lufi", "--foreground"]
