@@ -9,7 +9,7 @@ deb-src http://security.debian.org/debian-security stable-security main \
     && apt-get build-dep -y nginx \
     && mkdir /usr/src/nginx \
     && cd /usr/src/nginx && apt-get source nginx \
-    && apt-get install geoip-database libgeoip1
+    && apt-get install -y geoip-database libgeoip1
 #BROTLI
 RUN apt install -y libbrotli-dev brotli git \
     && git clone https://github.com/google/ngx_brotli /tmp/ngx_brotli
