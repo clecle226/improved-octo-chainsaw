@@ -1,9 +1,9 @@
-FROM debian:buster-slim as builder
+FROM debian:stable-slim as builder
 
 #Preparer le terrain
-RUN printf "deb-src http://deb.debian.org/debian/ buster main \n\
-deb-src http://deb.debian.org/debian/ buster-updates main \n\
-deb-src http://security.debian.org/debian-security buster/updates main \
+RUN printf "deb-src http://deb.debian.org/debian/ stable main \n\
+deb-src http://deb.debian.org/debian/ stable-updates main \n\
+deb-src http://security.debian.org/debian-security stable-security main \
     " >> /etc/apt/sources.list.d/nginx-src.list \
     && apt-get update \
     && apt-get build-dep -y nginx \
@@ -20,23 +20,23 @@ RUN VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{spl
     && sed -i -e 's#"Server: " NGINX_VER#"Server: CMaBite!!!"#' "/usr/src/nginx/nginx-$VERSION_NGINX/src/http/ngx_http_header_filter_module.c"
 
 #QUIC(HE) de cloudflare
-RUN apt-get build-dep -y openssl \
-    && apt-get install -y cmake curl \
-    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-    && export PATH="$HOME/.cargo/bin:$PATH" \
-    && VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
-    && git clone --recursive https://github.com/cloudflare/quiche /tmp/ngx_quic \
-    && apt-get install -y mercurial libpcre3 libpcre3-dev gcc make autoconf zlib1g zlib1g-dev \
-    && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
-    && patch -p01 < /tmp/ngx_quic/extras/nginx/nginx-1.16.patch
+#RUN apt-get build-dep -y openssl \
+#    && apt-get install -y cmake curl \
+#    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+#    && export PATH="$HOME/.cargo/bin:$PATH" \
+#    && VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
+#    && git clone --recursive https://github.com/cloudflare/quiche /tmp/ngx_quic \
+#    && apt-get install -y mercurial libpcre3 libpcre3-dev gcc make autoconf zlib1g zlib1g-dev \
+#    && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
+#    && patch -p01 < /tmp/ngx_quic/extras/nginx/nginx-1.16.patch
+
+#&& sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli --with-http_v3_module --with-openssl=/tmp/ngx_quic/deps/boringssl --with-quiche=/tmp/ngx_quic \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
 
 #COMPILATION
 RUN VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
-    && sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli --with-http_v3_module --with-openssl=/tmp/ngx_quic/deps/boringssl --with-quiche=/tmp/ngx_quic \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
+    && sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
     && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
     && dpkg-buildpackage -b
-
-#    && sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
 
 
 # -> Copy sur un debian vierge et install
