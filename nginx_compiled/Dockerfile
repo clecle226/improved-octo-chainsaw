@@ -6,7 +6,6 @@ deb-src http://deb.debian.org/debian/ buster-updates main \n\
 deb-src http://security.debian.org/debian-security buster/updates main \
     " >> /etc/apt/sources.list.d/nginx-src.list \
     && apt-get update \
-    && apt-get install -y nginx-extras \
     && apt-get build-dep -y nginx \
     && mkdir /usr/src/nginx \
     && cd /usr/src/nginx && apt-get source nginx \
