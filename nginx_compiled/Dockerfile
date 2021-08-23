@@ -14,7 +14,7 @@ deb-src http://security.debian.org/debian-security stable-security main \
 RUN apt install -y libbrotli-dev brotli git \
     && git clone https://github.com/google/ngx_brotli /tmp/ngx_brotli
 #CHANGEMENT NOM SERVEUR
-RUN VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
+RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
     && sed -i -e 's#Server: nginx#Server: CMaBite!!!#' "/usr/src/nginx/nginx-$VERSION_NGINX/src/http/ngx_http_header_filter_module.c" \
     && sed -i -e 's#"Server: " NGINX_VER_BUILD#"Server: CMaBite!!!"#' "/usr/src/nginx/nginx-$VERSION_NGINX/src/http/ngx_http_header_filter_module.c" \
     && sed -i -e 's#"Server: " NGINX_VER#"Server: CMaBite!!!"#' "/usr/src/nginx/nginx-$VERSION_NGINX/src/http/ngx_http_header_filter_module.c"
@@ -24,7 +24,7 @@ RUN VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{spl
 #    && apt-get install -y cmake curl \
 #    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
 #    && export PATH="$HOME/.cargo/bin:$PATH" \
-#    && VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
+#    && VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
 #    && git clone --recursive https://github.com/cloudflare/quiche /tmp/ngx_quic \
 #    && apt-get install -y mercurial libpcre3 libpcre3-dev gcc make autoconf zlib1g zlib1g-dev \
 #    && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
@@ -33,7 +33,7 @@ RUN VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{spl
 #&& sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli --with-http_v3_module --with-openssl=/tmp/ngx_quic/deps/boringssl --with-quiche=/tmp/ngx_quic \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
 
 #COMPILATION
-RUN VERSION_NGINX=`apt-cache show nginx-extras/buster | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
+RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
     && sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
     && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
     && dpkg-buildpackage -b
