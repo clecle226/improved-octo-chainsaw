@@ -14,7 +14,7 @@ deb-src http://security.debian.org/debian-security stable-security main \
 #PREP CROSSARCH: armhf (OPI)
 RUN dpkg --add-architecture armhf \
     && apt-get update \
-    && apt-get -y install build-essential crossbuild-essential-armhf \
+    && apt-get install -y build-essential crossbuild-essential-armhf \
     && apt-get build-dep -y -aarmhf nginx
     
 #BROTLI
