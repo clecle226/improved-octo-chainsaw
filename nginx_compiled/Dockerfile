@@ -10,8 +10,15 @@ deb-src http://security.debian.org/debian-security stable-security main \
     && mkdir /usr/src/nginx \
     && cd /usr/src/nginx && apt-get source nginx \
     && apt-get install -y geoip-database libgeoip1
+    
+#PREP CROSSARCH: armhf (OPI)
+RUN sudo dpkg --add-architecture armhf \
+    && sudo apt-get update \
+    && sudo apt-get -y install build-essential crossbuild-essential-armhf \
+    && sudo apt-get build-dep -y -aarmhf <package>
+    
 #BROTLI
-RUN apt install -y libbrotli-dev brotli git \
+RUN apt-get install -y libbrotli-dev brotli git \
     && git clone https://github.com/google/ngx_brotli /tmp/ngx_brotli
 #CHANGEMENT NOM SERVEUR
 RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
@@ -36,7 +43,8 @@ RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{spl
 RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
     && sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
     && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
-    && dpkg-buildpackage -b
+    && dpkg-buildpackage -b \
+    && CONFIG_SITE=/etc/dpkg-cross/cross-config.<host_arch>  DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -aarmhf -Pcross,nocheck
 
 
 # -> Copy sur un debian vierge et install
