@@ -12,10 +12,10 @@ deb-src http://security.debian.org/debian-security stable-security main \
     && apt-get install -y geoip-database libgeoip1
     
 #PREP CROSSARCH: armhf (OPI)
-RUN sudo dpkg --add-architecture armhf \
-    && sudo apt-get update \
-    && sudo apt-get -y install build-essential crossbuild-essential-armhf \
-    && sudo apt-get build-dep -y -aarmhf nginx
+RUN dpkg --add-architecture armhf \
+    && apt-get update \
+    && apt-get -y install build-essential crossbuild-essential-armhf \
+    && apt-get build-dep -y -aarmhf nginx
     
 #BROTLI
 RUN apt-get install -y libbrotli-dev brotli git \
