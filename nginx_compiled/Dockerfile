@@ -1,4 +1,4 @@
-FROM debian:stable-slim as builder
+FROM debian:stable as builder
 
 #Preparer le terrain
 RUN printf "deb-src http://deb.debian.org/debian/ stable main \n\
@@ -44,7 +44,7 @@ RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{spl
     && sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
     && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
     && dpkg-buildpackage -b \
-    && CONFIG_SITE=/etc/dpkg-cross/cross-config.<host_arch>  DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -aarmhf -Pcross,nocheck
+    && CONFIG_SITE=/etc/dpkg-cross/cross-config.amd64  DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -aarmhf -Pcross,nocheck
 
 
 # -> Copy sur un debian vierge et install
