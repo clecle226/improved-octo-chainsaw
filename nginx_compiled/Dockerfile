@@ -6,10 +6,11 @@ deb-src http://deb.debian.org/debian/ stable-updates main \n\
 deb-src http://security.debian.org/debian-security stable-security main \
     " >> /etc/apt/sources.list.d/nginx-src.list \
     && apt-get update \
-    && apt-get build-dep -y nginx \
+    && apt-get build-dep -y nginx-extras \
     && mkdir /usr/src/nginx \
     && cd /usr/src/nginx && apt-get source nginx \
-    && apt-get install -y geoip-database libgeoip1
+    && apt-get install -y geoip-database libgeoip1 libgeoip-dev libmhash-dev devscripts \
+    && mk-build-deps nginx-extras
     
 #PREP CROSSARCH: armhf (OPI)
 RUN dpkg --add-architecture armhf \
@@ -43,8 +44,8 @@ RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{spl
 RUN VERSION_NGINX=`apt-cache show nginx-extras/stable | grep Version | awk '{split($0,a);print a[2]}' | awk '{split($0,a,"-"); print a[1]}'` \
     && sed -i -e 's#^extras_configure_flags.*#extras_configure_flags := --add-module=/tmp/ngx_brotli \\#' "/usr/src/nginx/nginx-$VERSION_NGINX/debian/rules" \
     && cd /usr/src/nginx/nginx-$VERSION_NGINX/ \
-    && dpkg-buildpackage -b \
-    && dpkg-buildpackage --target-arch armhf
+    && dpkg-buildpackage -b
+#    && dpkg-buildpackage --target-arch armhf
 
 
 # -> Copy sur un debian vierge et install
